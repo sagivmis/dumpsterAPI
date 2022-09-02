@@ -1,0 +1,34 @@
+{
+    "title": "Update Debris Body Schema",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "title": {
+            "type": "string"
+        },
+        "wantedDumpster": {
+            "type": "string"
+        },
+        "tags": {
+            "type": "object",
+            "properties": {
+                "tag": "string"
+            }
+        },
+        "summary": {
+            "type": "string"
+        },
+        "links": {
+            "type": "string"
+        },
+        "keywords": {
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "id"
+    ]
+}

@@ -1,0 +1,32 @@
+{
+    "title": "Post Debris Body Schema",
+    "type": "object",
+    "properties": {
+        "title": {
+            "type": "string"
+        },
+        "wantedDumpster": {
+            "type": "string"
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "summary": {
+            "type": "string"
+        },
+        "links": {
+            "type": "string"
+        },
+        "keywords": {
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "title",
+        "dumpster"
+    ]
+}

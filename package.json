@@ -1,0 +1,24 @@
+{
+  "name": "dumpsterapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "compile-schemas": "json2ts -i schemas -o types",
+    "start": "nodemon build/server.js",
+    "build": "tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "dotenv": "^16.0.2",
+    "fastify": "^4.5.3",
+    "mongodb": "^4.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.14",
+    "json-schema-to-typescript": "^11.0.2",
+    "typescript": "^4.8.2"
+  }
+}

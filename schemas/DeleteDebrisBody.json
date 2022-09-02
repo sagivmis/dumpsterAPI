@@ -1,0 +1,13 @@
+{
+    "title": "Delete Debris Body Schema",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "id"
+    ]
+}

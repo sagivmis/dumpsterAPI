@@ -1,0 +1,16 @@
+{
+    "title": "Get Debris By Tag Body Schema",
+    "type": "object",
+    "properties": {
+        "wTags": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "wantedTags"
+    ]
+}
