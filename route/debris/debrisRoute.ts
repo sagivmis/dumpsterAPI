@@ -214,19 +214,6 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
 
   //#endregion GETTERS
 
-  //change to post once started using my app \ postman
-  server.get("/newDebris", async (request, reply) => {
-    const newDebris: Debris = {
-      title: "Publish a new site",
-      tags: ["development"],
-      dumpster: "fullstack"
-    }
-    //check if dumpster contains a doc like this , based on combination of
-    //title and dumpster
-    dumpster.insertOne(newDebris)
-    utils.logAndReply(reply, newDebris, options.debugLogs)
-  })
-
   server.post<{ Body: PostDebrisBodySchema }>("/", async (request, reply) => {
     const { title, wantedDumpster, tags, keywords, links, summary } =
       request.body
