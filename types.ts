@@ -9,9 +9,13 @@ export type Debris = {
 
 export type Tag = "bugfix" | "research" | "development" | "other"
 
-export type Section = {
-  section: "devops" | "fullstack" | "it" | "marketing" | "r&d" | "other"
-}
+export type Section =
+  | "devops"
+  | "fullstack"
+  | "it"
+  | "marketing"
+  | "r&d"
+  | "other"
 
 export interface GetDebrisTitleParams {
   wantedTitle: string
@@ -19,10 +23,6 @@ export interface GetDebrisTitleParams {
 
 export interface GetDebrisTagsParams {
   wantedTag: Tag
-}
-
-export interface GetDebrisTagsBody {
-  wantedTags: Tag[]
 }
 
 export interface GetDebrisDumpsterParams {

@@ -1,0 +1,13 @@
+{
+    "title": "Get Debris By Dumpster Body Schema",
+    "type": "object",
+    "properties": {
+        "dumpster": {
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "dumpster"
+    ]
+}

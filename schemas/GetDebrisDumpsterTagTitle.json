@@ -1,0 +1,24 @@
+{
+    "title": "Get Debris By Dumpster, Tag and Title Body Schema",
+    "type": "object",
+    "properties": {
+        "dumpster": {
+            "type": "string"
+        },
+        "wantedTags": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "title": {
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "dumpster",
+        "wantedTags",
+        "title"
+    ]
+}

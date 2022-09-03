@@ -12,9 +12,9 @@
             "type": "string"
         },
         "tags": {
-            "type": "object",
-            "properties": {
-                "tag": "string"
+            "type": "array",
+            "items": {
+                "type": "string"
             }
         },
         "summary": {

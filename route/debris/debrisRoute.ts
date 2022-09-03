@@ -1,4 +1,5 @@
-import { FastifyPluginCallback, FastifyReply } from "fastify"
+//#region IMPORTS
+import { FastifyPluginCallback } from "fastify"
 import {
   Debris,
   GetDebrisDumpsterParams,
@@ -6,11 +7,8 @@ import {
   GetDebrisDumpsterTagTitleParams,
   GetDebrisDumpsterTitleParams,
   GetDebrisIDParams,
-  GetDebrisTagsBody,
-  GetDebrisTagsParams,
   GetDebrisTitleParams,
   GetDebrisTitleTagParams,
-  LogSuffixPrefix,
   Tag
 } from "../../types"
 import { PostDebrisBodySchema } from "../../types/PostDebrisBody"
@@ -22,8 +20,14 @@ import { DeleteDebrisBodySchema } from "../../types/DeleteDebrisBody"
 import utils from "../../utils"
 import { UpdateDebrisBodySchema } from "../../types/UpdateDebrisBody"
 import { GetDebrisByTagBodySchema } from "../../types/GetDebrisTagBody"
+import dotenv from "dotenv"
+import { GetDebrisByDumpsterAndTagBodySchema } from "../../types/GetDebrisDumpsterTagBody"
+import { GetDebrisByTagAndTitleBodySchema } from "../../types/GetDebrisTagTitleBody"
+import { GetDebrisByDumpsterTagAndTitleBodySchema } from "../../types/GetDebrisDumpsterTagTitle"
+import { debug } from "console"
 
-const dotenv = require("dotenv")
+//#endregion
+
 dotenv.config()
 
 const { CONNECT_DB } = process.env
@@ -31,7 +35,6 @@ const { CONNECT_DB } = process.env
 const mongoClient = new MongoClient(CONNECT_DB)
 
 const dumpster: Collection = mongoClient.db(dumpsterDB).collection(dumpsterDB)
-
 dumpster.createIndex({ title: "text" })
 
 interface IDebrisRouteOpts {
@@ -63,21 +66,18 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
     let str = ""
   }
 
-  server.get<{ Body: GetDebrisByTagBodySchema }>(
+  server.post<{ Body: GetDebrisByTagBodySchema }>(
     "/tag",
     async (request, reply) => {
-      const { wTags } = request.body
-      const tags = wTags as Tag[]
-      options.debugLogs &&
-        console.log(`Requested Tag: ${arrayToString(tags)}\n\nOutput:\n`)
-      const allTagItems: any = []
-
-      tags.forEach(async (wantedTag) => {
-        options.debugLogs && console.log("Wanted Tag: ", wantedTag)
-        allTagItems.push(
-          ...(await dumpster.find({ tags: { wantedTag } }).toArray())
-        )
-      })
+      const { wantedTags } = request.body
+      const tags = wantedTags as Tag[]
+      options.debugLogs && console.log(`Requested Tags: ${tags}\n\n`)
+      const allTagItems: any = await utils.checkAllTags(
+        dumpster,
+        tags,
+        {},
+        options.debugLogs
+      )
 
       utils.logAndReply(reply, allTagItems, options.debugLogs)
     }
@@ -100,9 +100,7 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
       const { wantedDumpster } = request.params
       options.debugLogs &&
         console.log(`Requested Dumpster: ${wantedDumpster}\n\nOutput:\n`)
-      const items = await dumpster
-        .find({ dumpster: { section: wantedDumpster } })
-        .toArray()
+      const items = await dumpster.find({ dumpster: wantedDumpster }).toArray()
 
       utils.logAndReply(reply, items, options.debugLogs)
     }
@@ -117,12 +115,13 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
       const { wantedTitle, wantedDumpster } = request.params
       options.debugLogs &&
         console.log(
-          `Requested Dumpster: ${wantedDumpster}\nRequested Title: ${wantedTitle}\n\nOutput:\n`
+          `Requested Dumpster: ${wantedDumpster}\nRequested Title: ${wantedTitle}
+          \n\nOutput:\n`
         )
       const items = await dumpster
         .find({
           title: { $regex: wantedTitle, $options: "i" },
-          dumpster: { section: wantedDumpster }
+          dumpster: wantedDumpster
         })
         .toArray()
 
@@ -130,41 +129,51 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
     }
   )
 
-  server.get<{ Params: GetDebrisDumpsterTagParams }>(
-    "/dumpster&tag/:wantedDumpster/:wantedTag",
+  server.post<{ Body: GetDebrisByDumpsterAndTagBodySchema }>(
+    "/dumpster&tag/",
     async (request, reply) => {
-      const { wantedTag, wantedDumpster } = request.params
+      const { wantedTags, dumpster: wantedDumpster } = request.body
+      const tags = wantedTags as Tag[]
       options.debugLogs &&
         console.log(
-          `Requested Dumpster: ${wantedDumpster}\nRequested Tag: ${wantedTag}\n\nOutput:\n`
+          `Requested Dumpster: ${wantedDumpster}\nRequested Tag: ${tags}
+          \n\nOutput:\n`
         )
-      const items = await dumpster
-        .find({
-          tags: { wantedTag },
-          dumpster: { section: wantedDumpster }
-        })
-        .toArray()
 
-      utils.logAndReply(reply, items, options.debugLogs)
+      const allTagItems: any = await utils.checkAllTags(
+        dumpster,
+        tags,
+        {
+          dumpster: wantedDumpster
+        },
+        options.debugLogs
+      )
+
+      utils.logAndReply(reply, allTagItems, options.debugLogs)
     }
   )
 
-  server.get<{ Params: GetDebrisTitleTagParams }>(
-    "/tag&title/:wantedTag/:wantedTitle",
+  server.post<{ Body: GetDebrisByTagAndTitleBodySchema }>(
+    "/tag&title",
     async (request, reply) => {
-      const { wantedTag, wantedTitle } = request.params
+      const { wantedTags, title: wantedTitle } = request.body
+      const tags = wantedTags as Tag[]
       options.debugLogs &&
         console.log(
-          `Requested Tag: ${wantedTag}\nRequested Title: ...${wantedTitle}...\n\nOutput:\n`
+          `Requested Tags: ${wantedTags}\nRequested Title: ...${wantedTitle}...
+          \n\nOutput:\n`
         )
-      const items = await dumpster
-        .find({
-          title: { $regex: wantedTitle, $options: "i" },
-          tags: { wantedTag }
-        })
-        .toArray()
 
-      utils.logAndReply(reply, items, options.debugLogs)
+      const allTagItems: any = await utils.checkAllTags(
+        dumpster,
+        tags,
+        {
+          title: { $regex: wantedTitle, $options: "i" }
+        },
+        options.debugLogs
+      )
+
+      utils.logAndReply(reply, allTagItems, options.debugLogs)
     }
   )
 
@@ -172,25 +181,32 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
 
   //#region TRIPLE_PARAM
 
-  server.get<{ Params: GetDebrisDumpsterTagTitleParams }>(
-    "/dumpster&tag&title/:wantedDumpster/:wantedTag/:wantedTitle",
+  server.post<{ Body: GetDebrisByDumpsterTagAndTitleBodySchema }>(
+    "/dumpster&tag&title",
     async (request, reply) => {
-      const { wantedTag, wantedTitle, wantedDumpster } = request.params
+      const {
+        wantedTags,
+        title: wantedTitle,
+        dumpster: wantedDumpster
+      } = request.body
+      const tags = wantedTags as Tag[]
 
       options.debugLogs &&
         console.log(
-          `Requested Dumpster: ${wantedDumpster}\nRequested Tag: ${wantedTag}\n`,
-          `Requested Title: ...${wantedTitle}...\n\nOutput:\n`
+          `Requested Dumpster: ${wantedDumpster}\nRequested Tags: ${wantedTags}`,
+          `\nRequested Title: ...${wantedTitle}...\n\nOutput:\n`
         )
-      const items = await dumpster
-        .find({
-          title: { $regex: wantedTitle, $options: "i" },
-          tags: { wantedTag },
-          dumpster: { section: wantedDumpster }
-        })
-        .toArray()
 
-      utils.logAndReply(reply, items, options.debugLogs)
+      const allTagItems: any = await utils.checkAllTags(
+        dumpster,
+        tags,
+        {
+          title: { $regex: wantedTitle, $options: "i" },
+          dumpster: wantedDumpster
+        },
+        options.debugLogs
+      )
+      utils.logAndReply(reply, allTagItems, options.debugLogs)
     }
   )
 
@@ -203,7 +219,7 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
     const newDebris: Debris = {
       title: "Publish a new site",
       tags: ["development"],
-      dumpster: { section: "fullstack" }
+      dumpster: "fullstack"
     }
     //check if dumpster contains a doc like this , based on combination of
     //title and dumpster
@@ -217,7 +233,7 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
     console.log(title, wantedDumpster, tags, keywords, links, summary)
     const newDebris = {
       title,
-      wantedDumpster,
+      dumpster: wantedDumpster,
       tags,
       keywords,
       links,
@@ -231,12 +247,12 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
     const { id, keywords, links, summary, tags, title, wantedDumpster } =
       request.body
     const updatedDebris = {
-      title,
-      wantedDumpster,
-      tags,
-      keywords,
-      links,
-      summary
+      ...(title && { title }),
+      ...(dumpster && { dumpster: wantedDumpster }),
+      ...(tags && { tags }),
+      ...(keywords && { keywords }),
+      ...(links && { links }),
+      ...(summary && { summary })
     }
     const prevItem = await dumpster.findOne({ _id: new ObjectId(id) })
 
@@ -250,19 +266,10 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
           console.log(err)
           throw err
         }
-        Object.keys(updatedDebris).forEach((key) => {
-          if (
-            (updatedDebris as any)[key] === undefined &&
-            (updatedDebris as any)[key]
-          )
-            (updatedDebris as any)[key] = (prevItem as any)[key]
+        const updatedItem = await dumpster.findOne({ _id: new ObjectId(id) })
+        utils.logAndReply(reply, updatedItem, options.debugLogs, {
+          prefix: "UPDATED:\n"
         })
-
-        console.log("UPDATED:\n")
-
-        const updatedItem = await dumpster.findOne({ _id: id })
-        // console.log(updatedItem)
-        utils.logAndReply(reply, updatedDebris, options.debugLogs)
       }
     )
   })
@@ -272,7 +279,7 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
     async (request, reply) => {
       const { id } = request.body
       dumpster.deleteOne({ _id: new ObjectId(id) })
-      utils.logAndReply(reply, `deleted item`, options.debugLogs)
+      utils.logAndReply(reply, `deleted item ${id}`, options.debugLogs)
     }
   )
 

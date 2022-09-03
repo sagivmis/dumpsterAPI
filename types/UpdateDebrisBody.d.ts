@@ -9,10 +9,7 @@ export interface UpdateDebrisBodySchema {
   id: string;
   title?: string;
   wantedDumpster?: string;
-  tags?: {
-    tag?: "string";
-    [k: string]: unknown;
-  };
+  tags?: string[];
   summary?: string;
   links?: string;
   keywords?: string;

@@ -1,5 +1,5 @@
 {
-    "title": "Get Debris By Tag Body Schema",
+    "title": "Get Debris By Tag and Title Body Schema",
     "type": "object",
     "properties": {
         "wantedTags": {
@@ -7,10 +7,14 @@
             "items": {
                 "type": "string"
             }
+        },
+        "title": {
+            "type": "string"
         }
     },
     "additionalProperties": false,
     "required": [
-        "wantedTags"
+        "wantedTags",
+        "title"
     ]
 }

@@ -1,0 +1,13 @@
+{
+    "title": "Get Debris By Title Body Schema",
+    "type": "object",
+    "properties": {
+        "title": {
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "title"
+    ]
+}

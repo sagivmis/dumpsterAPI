@@ -5,6 +5,6 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface GetDebrisByTagBodySchema {
-  wantedTags: string[];
+export interface GetDebrisByDumpsterBodySchema {
+  dumpster: string;
 }

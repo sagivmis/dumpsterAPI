@@ -1,2 +1,2 @@
-import { logAndReply } from "./utils"
-export default { logAndReply }
+import { logAndReply, checkAllTags } from "./utils"
+export default { logAndReply, checkAllTags }

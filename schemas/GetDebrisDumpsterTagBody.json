@@ -1,7 +1,10 @@
 {
-    "title": "Get Debris By Tag Body Schema",
+    "title": "Get Debris By Dumpster and Tag Body Schema",
     "type": "object",
     "properties": {
+        "dumpster": {
+            "type": "string"
+        },
         "wantedTags": {
             "type": "array",
             "items": {
@@ -11,6 +14,7 @@
     },
     "additionalProperties": false,
     "required": [
+        "dumpster",
         "wantedTags"
     ]
 }
