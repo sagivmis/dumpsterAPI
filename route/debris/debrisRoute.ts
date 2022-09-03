@@ -1,30 +1,23 @@
 //#region IMPORTS
 import { FastifyPluginCallback } from "fastify"
+import { ObjectId, MongoClient, Collection } from "mongodb"
+import dotenv from "dotenv"
+import utils from "../../utils"
 import {
-  Debris,
   GetDebrisDumpsterParams,
-  GetDebrisDumpsterTagParams,
-  GetDebrisDumpsterTagTitleParams,
   GetDebrisDumpsterTitleParams,
   GetDebrisIDParams,
   GetDebrisTitleParams,
-  GetDebrisTitleTagParams,
   Tag
 } from "../../types"
-import { PostDebrisBodySchema } from "../../types/PostDebrisBody"
-import { ObjectId } from "mongodb"
-import { MongoClient } from "mongodb"
-import { Collection } from "mongodb"
 import { dumpsterDB } from "../../constants"
+import { PostDebrisBodySchema } from "../../types/PostDebrisBody"
 import { DeleteDebrisBodySchema } from "../../types/DeleteDebrisBody"
-import utils from "../../utils"
 import { UpdateDebrisBodySchema } from "../../types/UpdateDebrisBody"
 import { GetDebrisByTagBodySchema } from "../../types/GetDebrisTagBody"
-import dotenv from "dotenv"
 import { GetDebrisByDumpsterAndTagBodySchema } from "../../types/GetDebrisDumpsterTagBody"
 import { GetDebrisByTagAndTitleBodySchema } from "../../types/GetDebrisTagTitleBody"
 import { GetDebrisByDumpsterTagAndTitleBodySchema } from "../../types/GetDebrisDumpsterTagTitle"
-import { debug } from "console"
 
 //#endregion
 
