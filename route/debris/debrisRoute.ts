@@ -210,7 +210,7 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
   server.post<{ Body: PostDebrisBodySchema }>("/", async (request, reply) => {
     const { title, wantedDumpster, tags, keywords, links, summary } =
       request.body
-    console.log(title, wantedDumpster, tags, keywords, links, summary)
+
     const newDebris = {
       title,
       dumpster: wantedDumpster,

@@ -2,7 +2,7 @@
   "name": "dumpsterapi",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "compile-schemas": "json2ts -i schemas -o types",
     "start": "nodemon build/server.js",
