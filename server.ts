@@ -2,6 +2,7 @@ import fastify from "fastify"
 import dotenv from "dotenv"
 import debrisRoute from "./route/debris/debrisRoute"
 import swagger from "@fastify/swagger"
+import cors from "@fastify/cors"
 
 dotenv.config()
 const { PORT, DEBUG_LOGS } = process.env
@@ -24,6 +25,9 @@ server.register(debrisRoute, { prefix: "/debris", debugLogs: DEBUG_LOGS })
 //   },
 //   exposeRoute: true
 // })
+server.register(cors, {
+  origin: "*"
+})
 
 const runServer = () => {
   server.listen({ port: PORT || 8080 }, (err, address) => {

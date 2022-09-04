@@ -11,11 +11,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fastify/cors": "^8.1.0",
     "@fastify/swagger": "^7.5.0",
     "body-parser": "^1.20.0",
     "dotenv": "^16.0.2",
     "fastify": "^4.5.3",
     "fastify-plugin": "^4.2.1",
+    "keyword-extractor": "0.0.23",
     "mongodb": "^4.9.1"
   },
   "devDependencies": {
