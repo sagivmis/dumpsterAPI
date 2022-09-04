@@ -3,6 +3,7 @@ declare global {
     interface ProcessEnv {
       CONNECT_DB: string
       PORT: number
+      HOST: string
       DEBUG_LOGS: boolean
     }
   }

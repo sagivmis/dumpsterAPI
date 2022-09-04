@@ -5,7 +5,7 @@ import swagger from "@fastify/swagger"
 import cors from "@fastify/cors"
 
 dotenv.config()
-const { PORT, DEBUG_LOGS } = process.env
+const { PORT, DEBUG_LOGS, HOST } = process.env
 const server = fastify()
 
 //plugins
@@ -29,14 +29,9 @@ server.register(cors, {
   origin: "*"
 })
 
-const runServer = () => {
-  server.listen({ port: PORT || 8080 }, (err, address) => {
-    if (err) {
-      console.error(err)
-      process.exit(1)
-    }
-    console.log(`Server listening at ${address}`)
-  })
+const runServer = async () => {
+  server.listen({ port: PORT || 8080, host: HOST || "0.0.0.0" })
+  console.log(`Server listening at port ${PORT || 8080}`)
 }
 
 server.get("/", (request, reply) => {
