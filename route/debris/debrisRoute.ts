@@ -18,6 +18,9 @@ import { GetDebrisByTagBodySchema } from "../../types/GetDebrisTagBody"
 import { GetDebrisByDumpsterAndTagBodySchema } from "../../types/GetDebrisDumpsterTagBody"
 import { GetDebrisByTagAndTitleBodySchema } from "../../types/GetDebrisTagTitleBody"
 import { GetDebrisByDumpsterTagAndTitleBodySchema } from "../../types/GetDebrisDumpsterTagTitle"
+import { GetDebrisByTitleBodySchema } from "../../types/GetDebrisTitleBody"
+import { GetDebrisByDumpsterBodySchema } from "../../types/GetDebrisDumpsterBody"
+import { GetDebrisByDumpsterAndTitleBodySchema } from "../../types/GetDebrisDumpsterTitleBody"
 
 //#endregion
 
@@ -41,10 +44,10 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
 ) => {
   //#region GETTERS
   //#region SINGLE_PARAM
-  server.get<{ Params: GetDebrisTitleParams }>(
-    "/title/:wantedTitle",
+  server.post<{ Body: GetDebrisByTitleBodySchema }>(
+    "/title",
     async (request, reply) => {
-      const { wantedTitle } = request.params
+      const { title: wantedTitle } = request.body
       options.debugLogs &&
         console.log(`Requested Title: ${wantedTitle}\n\nOutput:\n`)
       const items = await dumpster
@@ -87,10 +90,10 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
     }
   )
 
-  server.get<{ Params: GetDebrisDumpsterParams }>(
-    "/dumpster/:wantedDumpster",
+  server.post<{ Body: GetDebrisByDumpsterBodySchema }>(
+    "/dumpster",
     async (request, reply) => {
-      const { wantedDumpster } = request.params
+      const { dumpster: wantedDumpster } = request.body
       options.debugLogs &&
         console.log(`Requested Dumpster: ${wantedDumpster}\n\nOutput:\n`)
       const items = await dumpster.find({ dumpster: wantedDumpster }).toArray()
@@ -102,10 +105,10 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
 
   //#region DOUBLE_PARAM
 
-  server.get<{ Params: GetDebrisDumpsterTitleParams }>(
-    "/dumpster&title/:wantedDumpster/:wantedTitle",
+  server.post<{ Body: GetDebrisByDumpsterAndTitleBodySchema }>(
+    "/dumpster&title",
     async (request, reply) => {
-      const { wantedTitle, wantedDumpster } = request.params
+      const { title: wantedTitle, dumpster: wantedDumpster } = request.body
       options.debugLogs &&
         console.log(
           `Requested Dumpster: ${wantedDumpster}\nRequested Title: ${wantedTitle}
