@@ -17,7 +17,7 @@ const logAndReply = (reply, value, debugLogs, additions) => {
 exports.logAndReply = logAndReply;
 /**
 * retrieves all documents with a tag that is in 'tags' array,
-* OPTIONAL - logs each log.
+* OPTIONAL - logs each tag.
 ** queryAddition: adds functionality to the tag search,
 * i.e: { someKey: { $regex: wantedKey, $options: "i" } }
 

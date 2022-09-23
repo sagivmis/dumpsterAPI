@@ -2,26 +2,21 @@
 import { FastifyPluginCallback } from "fastify"
 import { ObjectId, MongoClient, Collection } from "mongodb"
 import dotenv from "dotenv"
-import utils from "../../utils"
-import {
-  GetDebrisDumpsterParams,
-  GetDebrisDumpsterTitleParams,
-  GetDebrisIDParams,
-  GetDebrisTitleParams,
-  Tag
-} from "../../types"
+import { checkAllTags, logAndReply } from "../../utils"
+import { GetDebrisIDParams, Tag } from "../../types"
 import { dumpsterDB } from "../../constants"
-import { PostDebrisBodySchema } from "../../types/PostDebrisBody"
-import { DeleteDebrisBodySchema } from "../../types/DeleteDebrisBody"
-import { UpdateDebrisBodySchema } from "../../types/UpdateDebrisBody"
-import { GetDebrisByTagBodySchema } from "../../types/GetDebrisTagBody"
-import { GetDebrisByDumpsterAndTagBodySchema } from "../../types/GetDebrisDumpsterTagBody"
-import { GetDebrisByTagAndTitleBodySchema } from "../../types/GetDebrisTagTitleBody"
-import { GetDebrisByDumpsterTagAndTitleBodySchema } from "../../types/GetDebrisDumpsterTagTitle"
-import { GetDebrisByTitleBodySchema } from "../../types/GetDebrisTitleBody"
-import { GetDebrisByDumpsterBodySchema } from "../../types/GetDebrisDumpsterBody"
-import { GetDebrisByDumpsterAndTitleBodySchema } from "../../types/GetDebrisDumpsterTitleBody"
-
+import {
+  GetDebrisByDumpsterAndTagBodySchema,
+  DeleteDebrisBodySchema,
+  GetDebrisByDumpsterAndTitleBodySchema,
+  GetDebrisByDumpsterBodySchema,
+  GetDebrisByDumpsterTagAndTitleBodySchema,
+  GetDebrisByTagAndTitleBodySchema,
+  GetDebrisByTagBodySchema,
+  GetDebrisByTitleBodySchema,
+  PostDebrisBodySchema,
+  UpdateDebrisBodySchema
+} from "../../schemas/ts/debris"
 //#endregion
 
 dotenv.config()
@@ -54,7 +49,7 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
         .find({ title: { $regex: wantedTitle, $options: "i" } })
         .toArray()
 
-      utils.logAndReply(reply, items, options.debugLogs)
+      logAndReply(reply, items, options.debugLogs)
     }
   )
 
@@ -68,14 +63,14 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
       const { wantedTags } = request.body
       const tags = wantedTags as Tag[]
       options.debugLogs && console.log(`Requested Tags: ${tags}\n\n`)
-      const allTagItems: any = await utils.checkAllTags(
+      const allTagItems: any = await checkAllTags(
         dumpster,
         tags,
         {},
         options.debugLogs
       )
 
-      utils.logAndReply(reply, allTagItems, options.debugLogs)
+      logAndReply(reply, allTagItems, options.debugLogs)
     }
   )
 
@@ -86,7 +81,7 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
       options.debugLogs && console.log(`Requested ID: ${id}\n\nOutput:\n`)
       const item = await dumpster.findOne({ _id: new ObjectId(id) })
 
-      utils.logAndReply(reply, item, options.debugLogs)
+      logAndReply(reply, item, options.debugLogs)
     }
   )
 
@@ -98,7 +93,7 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
         console.log(`Requested Dumpster: ${wantedDumpster}\n\nOutput:\n`)
       const items = await dumpster.find({ dumpster: wantedDumpster }).toArray()
 
-      utils.logAndReply(reply, items, options.debugLogs)
+      logAndReply(reply, items, options.debugLogs)
     }
   )
   //#endregion SINGLE_PARAM
@@ -121,7 +116,7 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
         })
         .toArray()
 
-      utils.logAndReply(reply, items, options.debugLogs)
+      logAndReply(reply, items, options.debugLogs)
     }
   )
 
@@ -136,7 +131,7 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
           \n\nOutput:\n`
         )
 
-      const allTagItems: any = await utils.checkAllTags(
+      const allTagItems: any = await checkAllTags(
         dumpster,
         tags,
         {
@@ -145,7 +140,7 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
         options.debugLogs
       )
 
-      utils.logAndReply(reply, allTagItems, options.debugLogs)
+      logAndReply(reply, allTagItems, options.debugLogs)
     }
   )
 
@@ -160,7 +155,7 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
           \n\nOutput:\n`
         )
 
-      const allTagItems: any = await utils.checkAllTags(
+      const allTagItems: any = await checkAllTags(
         dumpster,
         tags,
         {
@@ -169,7 +164,7 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
         options.debugLogs
       )
 
-      utils.logAndReply(reply, allTagItems, options.debugLogs)
+      logAndReply(reply, allTagItems, options.debugLogs)
     }
   )
 
@@ -193,7 +188,7 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
           `\nRequested Title: ...${wantedTitle}...\n\nOutput:\n`
         )
 
-      const allTagItems: any = await utils.checkAllTags(
+      const allTagItems: any = await checkAllTags(
         dumpster,
         tags,
         {
@@ -202,7 +197,7 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
         },
         options.debugLogs
       )
-      utils.logAndReply(reply, allTagItems, options.debugLogs)
+      logAndReply(reply, allTagItems, options.debugLogs)
     }
   )
 
@@ -223,7 +218,7 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
       summary
     }
     dumpster.insertOne(newDebris)
-    utils.logAndReply(reply, newDebris, options.debugLogs)
+    logAndReply(reply, newDebris, options.debugLogs)
   })
 
   server.put<{ Body: UpdateDebrisBodySchema }>("/", async (request, reply) => {
@@ -250,7 +245,7 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
           throw err
         }
         const updatedItem = await dumpster.findOne({ _id: new ObjectId(id) })
-        utils.logAndReply(reply, updatedItem, options.debugLogs, {
+        logAndReply(reply, updatedItem, options.debugLogs, {
           prefix: "UPDATED:\n"
         })
       }
@@ -262,24 +257,9 @@ const debrisRoute: FastifyPluginCallback<IDebrisRouteOpts> = (
     async (request, reply) => {
       const { id } = request.body
       dumpster.deleteOne({ _id: new ObjectId(id) })
-      utils.logAndReply(reply, `deleted item ${id}`, options.debugLogs)
+      logAndReply(reply, `deleted item ${id}`, options.debugLogs)
     }
   )
-
-  // server.delete("/dumpster", async (request, reply) => {
-  //   dumpster.deleteMany({  })
-  //   utils.logAndReply(reply, `deleted items (many)`, options.debugLogs)
-  // })
-
-  // server.delete("/tag", async (request, reply) => {
-  //   dumpster.deleteMany({  })
-  //   utils.logAndReply(reply, `deleted items (many)`, options.debugLogs)
-  // })
-
-  // server.delete("/", async (request, reply) => {
-  //   dumpster.deleteMany({  })
-  //   utils.logAndReply(reply, `deleted items (many)`, options.debugLogs)
-  // })
 
   done()
 }

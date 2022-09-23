@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongodb_1 = require("mongodb");
 const dotenv_1 = __importDefault(require("dotenv"));
-const utils_1 = __importDefault(require("../../utils"));
+const utils_1 = require("../../utils");
 const constants_1 = require("../../constants");
 //#endregion
 dotenv_1.default.config();
@@ -23,7 +23,7 @@ const debrisRoute = (server, options, done) => {
         const items = await dumpster
             .find({ title: { $regex: wantedTitle, $options: "i" } })
             .toArray();
-        utils_1.default.logAndReply(reply, items, options.debugLogs);
+        (0, utils_1.logAndReply)(reply, items, options.debugLogs);
     });
     const arrayToString = (array) => {
         let str = "";
@@ -32,21 +32,21 @@ const debrisRoute = (server, options, done) => {
         const { wantedTags } = request.body;
         const tags = wantedTags;
         options.debugLogs && console.log(`Requested Tags: ${tags}\n\n`);
-        const allTagItems = await utils_1.default.checkAllTags(dumpster, tags, {}, options.debugLogs);
-        utils_1.default.logAndReply(reply, allTagItems, options.debugLogs);
+        const allTagItems = await (0, utils_1.checkAllTags)(dumpster, tags, {}, options.debugLogs);
+        (0, utils_1.logAndReply)(reply, allTagItems, options.debugLogs);
     });
     server.get("/id/:id", async (request, reply) => {
         const { id } = request.params;
         options.debugLogs && console.log(`Requested ID: ${id}\n\nOutput:\n`);
         const item = await dumpster.findOne({ _id: new mongodb_1.ObjectId(id) });
-        utils_1.default.logAndReply(reply, item, options.debugLogs);
+        (0, utils_1.logAndReply)(reply, item, options.debugLogs);
     });
     server.post("/dumpster", async (request, reply) => {
         const { dumpster: wantedDumpster } = request.body;
         options.debugLogs &&
             console.log(`Requested Dumpster: ${wantedDumpster}\n\nOutput:\n`);
         const items = await dumpster.find({ dumpster: wantedDumpster }).toArray();
-        utils_1.default.logAndReply(reply, items, options.debugLogs);
+        (0, utils_1.logAndReply)(reply, items, options.debugLogs);
     });
     //#endregion SINGLE_PARAM
     //#region DOUBLE_PARAM
@@ -61,7 +61,7 @@ const debrisRoute = (server, options, done) => {
             dumpster: wantedDumpster
         })
             .toArray();
-        utils_1.default.logAndReply(reply, items, options.debugLogs);
+        (0, utils_1.logAndReply)(reply, items, options.debugLogs);
     });
     server.post("/dumpster&tag/", async (request, reply) => {
         const { wantedTags, dumpster: wantedDumpster } = request.body;
@@ -69,10 +69,10 @@ const debrisRoute = (server, options, done) => {
         options.debugLogs &&
             console.log(`Requested Dumpster: ${wantedDumpster}\nRequested Tag: ${tags}
           \n\nOutput:\n`);
-        const allTagItems = await utils_1.default.checkAllTags(dumpster, tags, {
+        const allTagItems = await (0, utils_1.checkAllTags)(dumpster, tags, {
             dumpster: wantedDumpster
         }, options.debugLogs);
-        utils_1.default.logAndReply(reply, allTagItems, options.debugLogs);
+        (0, utils_1.logAndReply)(reply, allTagItems, options.debugLogs);
     });
     server.post("/tag&title", async (request, reply) => {
         const { wantedTags, title: wantedTitle } = request.body;
@@ -80,10 +80,10 @@ const debrisRoute = (server, options, done) => {
         options.debugLogs &&
             console.log(`Requested Tags: ${wantedTags}\nRequested Title: ...${wantedTitle}...
           \n\nOutput:\n`);
-        const allTagItems = await utils_1.default.checkAllTags(dumpster, tags, {
+        const allTagItems = await (0, utils_1.checkAllTags)(dumpster, tags, {
             title: { $regex: wantedTitle, $options: "i" }
         }, options.debugLogs);
-        utils_1.default.logAndReply(reply, allTagItems, options.debugLogs);
+        (0, utils_1.logAndReply)(reply, allTagItems, options.debugLogs);
     });
     //#endregion DOUBLE_PARAM
     //#region TRIPLE_PARAM
@@ -92,11 +92,11 @@ const debrisRoute = (server, options, done) => {
         const tags = wantedTags;
         options.debugLogs &&
             console.log(`Requested Dumpster: ${wantedDumpster}\nRequested Tags: ${wantedTags}`, `\nRequested Title: ...${wantedTitle}...\n\nOutput:\n`);
-        const allTagItems = await utils_1.default.checkAllTags(dumpster, tags, {
+        const allTagItems = await (0, utils_1.checkAllTags)(dumpster, tags, {
             title: { $regex: wantedTitle, $options: "i" },
             dumpster: wantedDumpster
         }, options.debugLogs);
-        utils_1.default.logAndReply(reply, allTagItems, options.debugLogs);
+        (0, utils_1.logAndReply)(reply, allTagItems, options.debugLogs);
     });
     //#endregion TRIPLE_PARAM
     //#endregion GETTERS
@@ -111,7 +111,7 @@ const debrisRoute = (server, options, done) => {
             summary
         };
         dumpster.insertOne(newDebris);
-        utils_1.default.logAndReply(reply, newDebris, options.debugLogs);
+        (0, utils_1.logAndReply)(reply, newDebris, options.debugLogs);
     });
     server.put("/", async (request, reply) => {
         const { id, keywords, links, summary, tags, title, wantedDumpster } = request.body;
@@ -131,7 +131,7 @@ const debrisRoute = (server, options, done) => {
                 throw err;
             }
             const updatedItem = await dumpster.findOne({ _id: new mongodb_1.ObjectId(id) });
-            utils_1.default.logAndReply(reply, updatedItem, options.debugLogs, {
+            (0, utils_1.logAndReply)(reply, updatedItem, options.debugLogs, {
                 prefix: "UPDATED:\n"
             });
         });
@@ -139,20 +139,8 @@ const debrisRoute = (server, options, done) => {
     server.delete("/", async (request, reply) => {
         const { id } = request.body;
         dumpster.deleteOne({ _id: new mongodb_1.ObjectId(id) });
-        utils_1.default.logAndReply(reply, `deleted item ${id}`, options.debugLogs);
+        (0, utils_1.logAndReply)(reply, `deleted item ${id}`, options.debugLogs);
     });
-    // server.delete("/dumpster", async (request, reply) => {
-    //   dumpster.deleteMany({  })
-    //   utils.logAndReply(reply, `deleted items (many)`, options.debugLogs)
-    // })
-    // server.delete("/tag", async (request, reply) => {
-    //   dumpster.deleteMany({  })
-    //   utils.logAndReply(reply, `deleted items (many)`, options.debugLogs)
-    // })
-    // server.delete("/", async (request, reply) => {
-    //   dumpster.deleteMany({  })
-    //   utils.logAndReply(reply, `deleted items (many)`, options.debugLogs)
-    // })
     done();
 };
 exports.default = debrisRoute;

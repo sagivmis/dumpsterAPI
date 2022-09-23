@@ -30,8 +30,8 @@ export const logAndReply = (
   reply.send({ value })
 }
 /**
-* retrieves all documents with a tag that is in 'tags' array,
-* OPTIONAL - logs each log. 
+* retrieves all documents with a tag that is in 'tags' array,  
+* OPTIONAL - logs each tag. 
 ** queryAddition: adds functionality to the tag search,  
 * i.e: { someKey: { $regex: wantedKey, $options: "i" } }
 

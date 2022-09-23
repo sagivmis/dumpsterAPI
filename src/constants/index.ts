@@ -1,3 +1,3 @@
-import { dumpsterDB } from "./constants"
+import { dumpsterDB, usersDB, defaultUser } from "./constants"
 
-export { dumpsterDB }
+export { dumpsterDB, usersDB, defaultUser }

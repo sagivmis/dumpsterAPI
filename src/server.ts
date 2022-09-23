@@ -1,36 +1,34 @@
 import fastify from "fastify"
 import dotenv from "dotenv"
 import debrisRoute from "./route/debris/debrisRoute"
-import swagger from "@fastify/swagger"
 import cors from "@fastify/cors"
+import usersRoute from "./route/user/userRoute"
+import fs from "fs"
+import path from "path"
 
 dotenv.config()
 const { PORT, DEBUG_LOGS, HOST } = process.env
-const server = fastify()
+const server = fastify({
+  https: {
+    key: fs.readFileSync(path.join(__dirname, "server.key")),
+    cert: fs.readFileSync(path.join(__dirname, "server.crt"))
+  }
+})
 
 //plugins
 server.register(debrisRoute, { prefix: "/debris", debugLogs: DEBUG_LOGS })
-// server.register(swagger, {
-//   routePrefix: "/swagger",
-//   swagger: {
-//     info: {
-//       title: "Dumpster API",
-//       description: "Dumpster API with MongoDB",
-//       version: "1.0.0"
-//     },
-//     host: `localhost:${PORT || 8080}`,
-//     schemes: ["http"],
-//     consumes: ["application/json"],
-//     produces: ["application/json"]
-//   },
-//   exposeRoute: true
-// })
+server.register(usersRoute, { prefix: "/users", debugLogs: DEBUG_LOGS })
 server.register(cors, {
   origin: "*"
 })
 
 const runServer = async () => {
-  server.listen({ port: PORT || 8080, host: HOST || "0.0.0.0" })
+  server.listen(
+    { port: PORT || 8080, host: HOST || "0.0.0.0" },
+    (_, address) => {
+      console.log(address)
+    }
+  )
   console.log(`Server listening at port ${PORT || 8080}`)
 }
 
