@@ -67,3 +67,11 @@ export type LogSuffixPrefix = {
   prefix: string
   suffix: string
 }
+
+export type User = {
+  id: string
+  password: string
+  name: string
+  isAdmin: boolean
+  withPermissions: boolean
+}

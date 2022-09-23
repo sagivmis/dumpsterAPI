@@ -1,0 +1,13 @@
+{
+    "title": "Get User By User ID Schema",
+    "type": "object",
+    "properties": {
+        "userId": {
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "userId"
+    ]
+}
