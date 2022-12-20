@@ -18,7 +18,7 @@ Either way- replies the value to the relevant route
 export const logAndReply = (
   reply: FastifyReply,
   value: any,
-  debugLogs: boolean,
+  debugLogs: boolean = false,
   additions?: LogAdditions
 ) => {
   debugLogs &&

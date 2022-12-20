@@ -14,9 +14,14 @@ const mongoClient = new mongodb_1.MongoClient(CONNECT_DB);
 const users = mongoClient.db(constants_1.usersDB).collection(constants_1.usersDB);
 users.createIndex({ id: "text" });
 const usersRoute = (server, options, done) => {
+    server.get("/", async (request, reply) => {
+        (0, utils_1.logAndReply)(reply, "users");
+    });
     server.post("/id", { schema: { body: users_1.GetUserIdBody } }, async (request, reply) => {
         const { userId } = request.body;
-        const currentUser = await users.find({ id: userId }).toArray();
+        const currentUser = await users
+            .find({ id: { $regex: userId, $options: "i" } })
+            .toArray();
         options.debugLogs && console.log(`Requested ID: ${userId}\n\nOutput:\n`);
         (0, utils_1.logAndReply)(reply, currentUser, options.debugLogs);
     });

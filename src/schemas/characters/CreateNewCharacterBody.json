@@ -1,0 +1,35 @@
+{
+    "title": "Create Character Body Schema",
+    "type": "object",
+    "properties": {
+        "userId": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        },
+        "characterClass": {
+            "type": "string",
+            "enum": [
+                "archer",
+                "magician",
+                "warrior",
+                "healer"
+            ]
+        },
+        "mainAttribute": {
+            "type": "number"
+        },
+        "secondaryAttribute": {
+            "type": "number"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "userId",
+        "name",
+        "mainAttribute",
+        "secondaryAttribute",
+        "chararcterClass"
+    ]
+}
