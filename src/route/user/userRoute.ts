@@ -27,12 +27,17 @@ const usersRoute: FastifyPluginCallback<IUsersRouteOpts> = (
   options,
   done
 ) => {
+  server.get("/", async (request, reply) => {
+    logAndReply(reply, "users")
+  })
   server.post<{ Body: GetUserByUserIDSchema }>(
     "/id",
     { schema: { body: GetUserIdBody } },
     async (request, reply) => {
       const { userId } = request.body
-      const currentUser = await users.find({ id: userId }).toArray()
+      const currentUser = await users
+        .find({ id: { $regex: userId, $options: "i" } })
+        .toArray()
 
       options.debugLogs && console.log(`Requested ID: ${userId}\n\nOutput:\n`)
       logAndReply(reply, currentUser, options.debugLogs)

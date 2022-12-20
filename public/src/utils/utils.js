@@ -9,7 +9,7 @@ Either way- replies the value to the relevant route
  @param debugLogs boolean - optional (default= false)
  @param additions LogAdditions - optional
 */
-const logAndReply = (reply, value, debugLogs, additions) => {
+const logAndReply = (reply, value, debugLogs = false, additions) => {
     debugLogs &&
         console.log(`${additions?.prefix ? additions?.prefix : ""}`, value, `${additions?.suffix ? additions?.suffix : ""}`);
     reply.send({ value });
